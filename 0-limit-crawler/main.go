@@ -29,6 +29,7 @@ func Crawl(url string, depth int, wg *sync.WaitGroup) {
 		return
 	}
 
+	// TODO: Read about '%q' and formatting at all.
 	fmt.Printf("found: %s %q\n", url, body)
 
 	wg.Add(len(urls))
@@ -41,9 +42,10 @@ func Crawl(url string, depth int, wg *sync.WaitGroup) {
 }
 
 func main() {
+	// TODO: Read about 'WaitGroup'.
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	Crawl("http://golang.org/", 4, &wg)
+	Crawl("http://golang.org/", 4, &wg) // TODO: Read about '&'.
 	wg.Wait()
 }
