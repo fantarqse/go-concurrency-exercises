@@ -29,7 +29,8 @@ func Crawl(url string, depth int, wg *sync.WaitGroup) {
 		return
 	}
 
-	// TODO: Read about '%q' and formatting at all.
+	// NOTE:
+	// '%q' allows to safely escape a string and add quotes to it.
 	fmt.Printf("found: %s %q\n", url, body)
 
 	wg.Add(len(urls))
@@ -42,10 +43,13 @@ func Crawl(url string, depth int, wg *sync.WaitGroup) {
 }
 
 func main() {
-	// TODO: Read about 'WaitGroup'.
+	// NOTE:
+	// 'WaitGroup' is a synchronization tool
+	// that allows us to sync goroutines by adding them to the collection (wg.Add(n)).
+	// 'wg.Wait()' blocks the program and waits when the counter is a zero.
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	Crawl("http://golang.org/", 4, &wg) // TODO: Read about '&'.
+	Crawl("http://golang.org/", 4, &wg)
 	wg.Wait()
 }
