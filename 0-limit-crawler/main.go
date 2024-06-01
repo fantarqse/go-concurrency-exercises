@@ -51,7 +51,14 @@ func main() {
 	// 'wg.Wait()' blocks the program and waits when the counter is a zero.
 	var wg sync.WaitGroup
 
-	// TODO: what is time.Tick
+	// NOTE:
+	// 'time.Tick(d)' is a wrapper for 'time.NewTicker(d)', but provides access only to channel.
+	// time.Tick(d) == time.NewTicker(d).C
+	// 'time.NewTicker().C' has a '<-chan time.Time' type which means it is a receive-only channel.
+	//
+	// 1) 'chan Type' is a bidirectional channel.
+	// 2) 'chan<- Type' is a send-only channel.
+	// 3) '<-chan Type' is a receive-only channel.
 	rate := time.Tick(time.Second * 1)
 
 	wg.Add(1)
