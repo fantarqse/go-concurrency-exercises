@@ -28,7 +28,7 @@ import (
 // to destroying.
 type SessionManager struct {
 	mu       sync.Mutex
-	done     chan bool
+	done     chan struct{}
 	sessions map[string]Session
 }
 
@@ -41,13 +41,12 @@ type Session struct {
 // NewSessionManager creates a new sessionManager
 func NewSessionManager() *SessionManager {
 	m := &SessionManager{
+		done:     make(chan struct{}),
 		sessions: make(map[string]Session),
 	}
 
-	go func() { // Run Cleaner in the background
-		m.cleaner()
-		m.done <- true
-	}()
+	// Run Cleaner in the background
+	go m.cleaner()
 
 	return m
 }
@@ -106,12 +105,21 @@ func (m *SessionManager) UpdateSessionData(sessionID string, data map[string]int
 	return nil
 }
 
+func (m *SessionManager) Close() {
+	close(m.done)
+}
+
 func (m *SessionManager) cleaner() {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
-	for range ticker.C {
-		m.destroy()
+	for {
+		select {
+		case <-ticker.C:
+			m.destroy()
+		case <-m.done:
+			return
+		}
 	}
 }
 
@@ -154,5 +162,8 @@ func main() {
 	}
 
 	log.Println("Get session data:", updatedData)
-	<-m.done
+
+	time.Sleep(15 * time.Second)
+
+	m.Close()
 }
